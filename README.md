@@ -121,7 +121,117 @@ SELECT * FROM Bellabeat2.dbo.sleepday;
 SELECT * FROM Bellabeat2.dbo.Daily_Use;
 ```
 
-This detailed process not only refines the dataset for analysis but also prepares it for comprehensive insights into user activity and sleep patterns, pivotal for guiding Bellabeat's strategic decisions.
+
+Continuing with the structured approach for your GitHub README.md, here's how you can include the analysis phase using SQL queries to analyze total data by users, daily averages, and classify users based on their activity levels:
+
+
+## Analyze
+This section delves into the analysis of the consolidated Daily_Activity_Sleep data, focusing on total and average metrics, and classifying users by activity levels.
+
+### Total Data by Users and Day of the Week
+Analysis of total distance, steps, sleep, and calories by user ID and day of the week:
+
+```sql
+-- Total data by users
+SELECT Id, 
+       ROUND(SUM(TotalDistance),2) AS total_distance,
+       ROUND(SUM(TotalSteps),2) AS total_steps,
+       ROUND(SUM(TotalMinutesAsleep),2) AS total_minutes_sleep,
+       ROUND(SUM(Calories),2) AS total_calories
+FROM Daily_Activity_Sleep
+GROUP BY Id;
+
+-- Total data by day of the week
+SELECT Day_of_Week, 
+       ROUND(SUM(TotalDistance),2) AS total_distance,
+       ROUND(SUM(TotalSteps),2) AS total_steps,
+       ROUND(SUM(TotalMinutesAsleep),2) AS total_minutes_sleep,
+       ROUND(SUM(Calories),2) AS total_calories
+FROM Daily_Activity_Sleep
+GROUP BY Day_of_Week
+ORDER BY CASE Day_of_Week
+         WHEN 'Monday' THEN 1
+         WHEN 'Tuesday' THEN 2
+         WHEN 'Wednesday' THEN 3
+         WHEN 'Thursday' THEN 4
+         WHEN 'Friday' THEN 5
+         WHEN 'Saturday' THEN 6
+         WHEN 'Sunday' THEN 7
+         END;
 ```
+
+### Averages by Users and Day of the Week
+Calculating average distance, steps, sleep, and calories:
+
+```sql
+-- Average data by users
+SELECT Id, 
+       ROUND(AVG(TotalDistance),2) AS avg_distance,
+       ROUND(AVG(TotalSteps),2) AS avg_steps,
+       ROUND(AVG(TotalMinutesAsleep),2) AS avg_sleep,
+       ROUND(AVG(Calories),2) AS avg_calories
+FROM Daily_Activity_Sleep
+GROUP BY Id;
+
+-- Average data by day of the week
+SELECT Day_of_Week,
+       ROUND(AVG(TotalDistance),2) AS avg_distance,
+       ROUND(AVG(TotalSteps),2) AS avg_steps,
+       ROUND(AVG(TotalMinutesAsleep),2) AS avg_sleep,
+       ROUND(AVG(Calories),2) AS avg_calories
+FROM Daily_Activity_Sleep
+GROUP BY Day_of_Week
+ORDER BY CASE Day_of_Week
+         WHEN 'Monday' THEN 1
+         WHEN 'Tuesday' THEN 2
+         WHEN 'Wednesday' THEN 3
+         WHEN 'Thursday' THEN 4
+         WHEN 'Friday' THEN 5
+         WHEN 'Saturday' THEN 6
+         WHEN 'Sunday' THEN 7
+         END;
+```
+
+### Classifying Users by Average Daily Steps
+Creating a new table for average metrics and classifying users based on their activity:
+
+```sql
+-- Creating a new table for averages
+SELECT Id, 
+       ROUND(AVG(TotalDistance), 2) AS avg_distance,
+       ROUND(AVG(TotalSteps), 2) AS avg_steps,
+       ROUND(AVG(TotalMinutesAsleep), 2) AS avg_sleep,
+       ROUND(AVG(Calories), 2) AS avg_calories
+INTO average_by_users
+FROM Daily_Activity_Sleep
+GROUP BY Id;
+
+-- Renaming column for clarity
+EXEC sp_rename 'average_by_users.avg_steps', 'avg_daily_steps', 'COLUMN';
+
+-- Classifying users based on average daily steps
+SELECT Id, 
+       avg_daily_steps,
+       CASE
+           WHEN avg_daily_steps < 5000 THEN 'Sedentary'
+           WHEN avg_daily_steps >= 5000 AND avg_daily_steps < 7499 THEN 'Lightly Active'
+           WHEN avg_daily_steps >= 7500 AND avg_daily_steps < 9999 THEN 'Fairly Active'
+           WHEN avg_daily_steps >= 10000 THEN 'Very Active'
+       END AS User_Type
+INTO user_classification_by_avg_daily_steps
+FROM average_by_users;
+
+-- Determining the percentage of user types
+SELECT User_Type,
+       COUNT(Id) AS total_users,
+       CAST(COUNT(Id) * 100.0 / 24 AS DECIMAL(5, 1)) AS user_percentage
+FROM user_classification_by_avg_daily_steps
+GROUP BY User_Type
+ORDER BY user_percentage DESC;
+```
+
+These analyses provide critical insights into the physical activity and wellness habits of users, facilitating targeted recommendations for Bellabeat's marketing strategy enhancements.
+```
+
 
 
