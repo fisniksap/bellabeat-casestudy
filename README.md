@@ -71,3 +71,57 @@ DROP TABLE sleepday;
 -- Rename sleepdayv2 to sleepday as the updated table
 EXEC sp_rename 'Bellabeat2.dbo.sleepdayv2', 'sleepday';
 
+
+### Adding Day of Week Column
+To enhance our analysis, we added a 'Day_of_Week' column to our tables to categorize data by the day of the week. Here's how:
+
+```sql
+-- Step 1: Add a new 'Day_of_Week' column to the dailyactivity table
+ALTER TABLE dailyactivity ADD Day_of_Week VARCHAR(10);
+
+-- Step 2: Populate the 'Day_of_Week' column with day names
+UPDATE dailyactivity SET Day_of_Week = DATENAME(WEEKDAY, ActivityDate);
+
+-- Repeat the process for the sleepday table
+ALTER TABLE Bellabeat2.dbo.sleepday ADD Day_of_Week char(10);
+UPDATE sleepday SET Day_of_Week = DATENAME(WEEKDAY, SleepDay);
+
+-- Verify the changes
+SELECT * FROM dailyactivity;
+SELECT * FROM sleepday;
+```
+
+### Creating Daily_Activity_Sleep Table
+To consolidate our data for in-depth analysis, we created a new table that joins daily activity with sleep data:
+
+```sql
+-- Creating a new table to combine daily activity and sleep data
+CREATE TABLE Daily_Activity_Sleep AS
+SELECT t1.*, t2.totalsleeprecords, t2.totalminutesasleep, t2.totaltimeinbed
+INTO Daily_Activity_Sleep
+FROM dailyactivity t1
+INNER JOIN sleepdaytable t2 ON t1.id = t2.id AND t1.ActivityDate = t2.SleepDay;
+
+-- Review the newly created table
+SELECT * FROM Daily_Activity_Sleep;
+```
+
+### Updating and Reviewing Data
+Final steps involved updating the 'ActivityDate' format for consistency and reviewing the prepared tables:
+
+```sql
+-- Update 'ActivityDate' to DATE format for uniformity
+UPDATE Daily_Activity_Sleep SET ActivityDate = CAST(ActivityDate AS DATE);
+UPDATE Daily_Activity_Sleep SET ActivityDate = CONVERT(DATE, ActivityDate);
+
+-- Review the updates
+SELECT * FROM Daily_Activity_Sleep;
+SELECT * FROM Bellabeat2.dbo.Daily_Activity_Sleep;
+SELECT * FROM Bellabeat2.dbo.sleepday;
+SELECT * FROM Bellabeat2.dbo.Daily_Use;
+```
+
+This detailed process not only refines the dataset for analysis but also prepares it for comprehensive insights into user activity and sleep patterns, pivotal for guiding Bellabeat's strategic decisions.
+```
+
+
