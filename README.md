@@ -21,3 +21,53 @@ A preliminary assessment of the data has revealed a lack of demographic informat
 For the purposes of this analysis, a focused approach has been adopted, with the selection of four key tables: daily activity, sleep patterns, hourly steps, and hourly calories. These tables were chosen with the intent to construct a comprehensive picture of the users' physical activity, sleep quality, and caloric expenditure, all of which are pivotal metrics for understanding lifestyle impacts on health.
 The analysis will employ rigorous data visualization techniques, primarily utilizing the ggplot2 package within the R programming environment, to elucidate trends and behaviors within the user data. This will be complemented by statistical analysis to explore correlations and other relationships within the dataset.
 As we proceed, it is imperative to maintain a critical view of the insights derived from this data, given the noted potential for bias and the specific subset of data files chosen for this examination.
+
+## Process
+This section outlines the SQL Server code used in the analysis, focusing on identifying unique users, checking for duplicates, and cleaning the data.
+
+### Unique Users
+Queries to check the number of unique users in different tables:
+
+```sql
+-- Checking number of Users in dailyactivity Table
+SELECT count(DISTINCT(Id)) FROM dailyactivity;
+
+-- Checking number of Users in sleepday Table
+SELECT count(DISTINCT(Id)) FROM sleepday;
+
+-- Checking number of Users in hourlysteps Table
+SELECT count(DISTINCT(Id)) FROM hourlysteps;
+
+-- Checking number of Users in hourlycalories Table
+SELECT count(distinct(id)) FROM hourlycalories;
+
+-- Checking Duplicates in dailyactivity Table
+SELECT Id, ActivityDate, TotalSteps, Count(*) FROM dailyactivity
+GROUP BY id, ActivityDate, TotalSteps
+HAVING Count(*) > 1;
+
+-- Checking Duplicates in sleepday Table
+SELECT Id, SleepDay, TotalSleepRecords, Count(*) AS duplicates FROM sleepday
+GROUP BY id, SleepDay, TotalSleepRecords
+HAVING Count(*) > 1;
+
+-- Checking Duplicates in hourlysteps Table
+SELECT Id, ActivityHour, StepTotal, count(*) FROM hourlysteps
+GROUP BY Id, ActivityHour, StepTotal
+HAVING Count(*) > 1;
+
+-- Checking Duplicates in hourlycalories Table
+SELECT Id, ActivityHour, Calories, count(*) FROM hourlycalories
+GROUP BY Id, ActivityHour, Calories
+Having Count(*) > 1;
+
+-- Copying distinct values into a new table for sleepday
+SELECT DISTINCT * INTO sleepdayv2 FROM sleepday;
+
+-- Drop old sleepday table
+USE master;
+DROP TABLE sleepday;
+
+-- Rename sleepdayv2 to sleepday as the updated table
+EXEC sp_rename 'Bellabeat2.dbo.sleepdayv2', 'sleepday';
+
