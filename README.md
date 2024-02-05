@@ -230,8 +230,159 @@ GROUP BY User_Type
 ORDER BY user_percentage DESC;
 ```
 
-These analyses provide critical insights into the physical activity and wellness habits of users, facilitating targeted recommendations for Bellabeat's marketing strategy enhancements.
+Adding to the structured GitHub README.md documentation, here's how to include the analysis regarding average hourly steps throughout the day, calculating average calories, user engagement in days, and classifying users based on usage in a clear and formatted way:
+
+```markdown
+## Calculating Average Hourly Steps Throughout the Day
+To gain insights into hourly activity patterns, we've calculated the average number of steps taken by users throughout the day.
+
+```sql
+-- Adding Time of the Day column to hourlysteps table
+ALTER TABLE hourlysteps ADD Time_of_Day TIME;
+UPDATE hourlysteps SET Time_of_Day = CAST(ActivityHour AS TIME);
+
+-- Adding Date column for further analysis
+ALTER TABLE hourlysteps ADD Date_Column DATE;
+UPDATE hourlysteps SET Date_Column = CAST(ActivityHour AS DATE);
+
+-- Calculating average steps by time of day
+SELECT Time_of_Day, ROUND(AVG(StepTotal), 2) AS Average_Steps FROM hourlysteps GROUP BY Time_of_Day ORDER BY Average_Steps DESC;
+
+-- Formatting the time for clarity
+SELECT DATEPART(HOUR, Time_of_Day) AS Time_of_the_Day, ROUND(AVG(StepTotal), 2) AS Average_Steps FROM hourlysteps GROUP BY DATEPART(HOUR, Time_of_Day) ORDER BY Average_Steps DESC;
 ```
+
+## Calculating Average Calories Throughout the Day
+Understanding energy expenditure patterns is crucial for wellness insights.
+
+```sql
+-- Preparing the hourlycalories table for analysis
+ALTER TABLE hourlycalories ADD Time_of_Day TIME;
+UPDATE hourlycalories SET Time_of_Day = CAST(ActivityHour AS TIME);
+
+-- Analyzing average calorie burn by hour
+SELECT DATEPART(HOUR, Time_of_Day) AS Time_of_the_Day, ROUND(AVG(Calories), 2) AS Calories FROM hourlycalories GROUP BY DATEPART(HOUR, Time_of_Day) ORDER BY Calories DESC;
+```
+
+## Calculating Usage in Days by Users
+Evaluating user engagement over the dataset's timeframe provides insight into device utilization.
+
+```sql
+-- Identifying total usage days for each user
+SELECT id, COUNT(id) AS Total_Usage_in_Days INTO frequency_of_usage FROM daily_activity_sleep GROUP BY id;
+SELECT * FROM frequency_of_usage ORDER BY Total_Usage_in_Days DESC;
+
+-- Renaming table for consistency
+EXEC sp_rename 'Frequency_of_Usage', 'frequency_of_usage';
+
+-- Classifying users by app usage frequency
+SELECT id, Total_Usage_in_Days, CASE WHEN Total_Usage_in_Days >= 1 AND Total_Usage_in_Days <= 10 THEN 'Low Use' WHEN Total_Usage_in_Days >= 11 AND Total_Usage_in_Days <= 20 THEN 'Moderate Use' WHEN Total_Usage_in_Days > 20 THEN 'High Use' END AS Type_of_Usage INTO user_classification_by_usage_in_days FROM frequency_of_usage;
+SELECT * FROM user_classification_by_usage_in_days ORDER BY Total_Usage_in_Days DESC;
+
+-- Determining percentage of users by type of usage
+SELECT Type_of_Usage, ROUND(COUNT(id)*100.0/24, 2) AS Percentage FROM user_classification_by_usage_in_days GROUP BY Type_of_Usage;
+```
+
+## Activity Time Analysis
+A deep dive into how users spend their time on various activities throughout a typical day.
+
+```sql
+-- Analyzing total time spent on each activity type per day
+SELECT Day_of_Week, SUM(SedentaryMinutes) AS Sedentary_Mins, SUM(LightlyActiveMinutes) AS LightlyActive_Mins, SUM(FairlyActiveMinutes) AS FairlyActive_Mins, SUM(VeryActiveMinutes) AS VeryActive_Mins FROM dailyactivity GROUP BY Day_of_Week ORDER BY CASE Day_of_Week WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 ELSE Day_of_Week END;
+
+-- Calculating the percentage of total time spent on each activity
+SELECT Day_of_Week, CONCAT(ROUND(SUM(VeryActiveMinutes) / SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes) * 100, 2), '%') AS VAM FROM dailyactivity GROUP BY Day_of_Week;
+```
+
+To include the additional analysis focusing on the percentage of total time spent on each activity per day, user classification by day, and the calculation of wear time percentage in your GitHub README.md using SQL Server code snippets, here's how you can format it with Markdown for clear documentation:
+
+```markdown
+## Advanced Activity Analysis
+
+This section covers advanced analysis techniques, including calculating the percentage of total time spent on various activities throughout the day and classifying users based on their daily activity patterns and device usage.
+
+### Calculating Percentage of Time Spent on Each Activity
+
+```sql
+-- Calculating percentage of total time spent on each activity per day
+SELECT Day_of_Week,
+       CONCAT(CAST(ROUND(CAST(SUM(VeryActiveMinutes) AS DECIMAL) / SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes) * 100, 2) AS DECIMAL(10,2)), '%') AS VAM,
+       CONCAT(CAST(ROUND(CAST(SUM(FairlyActiveMinutes) AS DECIMAL) / SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes) * 100, 2) AS DECIMAL(10,2)), '%') AS FAM,
+       CONCAT(CAST(ROUND(CAST(SUM(LightlyActiveMinutes) AS DECIMAL) / SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes) * 100, 2) AS DECIMAL(10,2)), '%') AS LAM,
+       CONCAT(CAST(ROUND(CAST(SUM(SedentaryMinutes) AS DECIMAL) / SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes) * 100, 2) AS DECIMAL(10,2)), '%') AS SM
+FROM dailyactivity
+GROUP BY Day_of_Week;
+
+-- Analysis by user ID to understand individual patterns
+SELECT id, Day_of_Week,
+       CONCAT(CAST(ROUND(CAST(SUM(VeryActiveMinutes) AS DECIMAL) / NULLIF(SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes), 0) * 100, 2) AS DECIMAL(10,2)), '%') AS VAM,
+       CONCAT(CAST(ROUND(CAST(SUM(FairlyActiveMinutes) AS DECIMAL) / NULLIF(SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes), 0) * 100, 2) AS DECIMAL(10,2)), '%') AS FAM,
+       CONCAT(CAST(ROUND(CAST(SUM(LightlyActiveMinutes) AS DECIMAL) / NULLIF(SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes), 0) * 100, 2) AS DECIMAL(10,2)), '%') AS LAM,
+       CONCAT(CAST(ROUND(CAST(SUM(SedentaryMinutes) AS DECIMAL) / NULLIF(SUM(VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes), 0) * 100, 2) AS DECIMAL(10,2)), '%') AS SM
+FROM dailyactivity
+GROUP BY id, Day_of_Week
+ORDER BY Id;
+```
+
+### Device Wear Time Analysis
+
+```sql
+-- Creating a table to analyze how users wear their devices throughout the day
+SELECT t1.*, t2.Total_Usage_in_Days, t2.Type_of_Usage INTO Daily_Use FROM dailyactivity t1 INNER JOIN user_classification_by_usage_in_days t2 ON t1.id = t2.id;
+
+-- Adding and updating columns to classify wear time
+ALTER TABLE Daily_Use ADD Total_Minutes_Worn bigint;
+UPDATE Daily_Use SET Total_Minutes_Worn = VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes;
+
+ALTER TABLE Daily_Use ADD Worn_Type VARCHAR(50);
+UPDATE Daily_Use SET Worn_Type = CASE WHEN Total_Minutes_Worn IS NULL THEN NULL WHEN Total_Minutes_Worn = 1440 THEN 'ALL Day' WHEN Total_Minutes_Worn >= 720 THEN 'More Than Half Day' WHEN Total_Minutes_Worn > 0 THEN 'Less Than Half Day' END;
+
+-- Calculating wear type percentage
+SELECT Worn_Type, COUNT(Id) AS Total_Users, CONCAT(CAST(ROUND(COUNT(Id) * 100.0 / 713, 2) AS decimal(10, 2)), '%') AS Worn_Type_Percentage FROM Daily_Use GROUP BY Worn_Type;
+```
+
+These advanced analytical steps enable a deeper understanding of user engagement and activity patterns, offering valuable insights for personalized health and wellness strategies.
+```
+
+## Correlation Analysis
+
+Exploring correlations within our dataset to understand relationships between different health metrics.
+
+### Initial Data Review
+
+```sql
+-- Reviewing the Daily_Activity_Sleep data structure
+SELECT * FROM Daily_Activity_Sleep;
+
+-- Reviewing the sleepday data structure
+SELECT * FROM sleepday;
+```
+
+### Correlation Between Daily Steps and Minutes Asleep
+
+Investigating the relationship between the number of steps taken each day and the total minutes asleep:
+
+```sql
+-- Analyzing correlation between daily steps and minutes asleep
+SELECT TotalSteps AS Steps, totalminutesasleep FROM Daily_Activity_Sleep;
+```
+
+### Correlation Between Daily Steps and Calories Burned
+
+Assessing how daily steps correlate with the number of calories burned:
+
+```sql
+-- Exploring the relationship between steps and calories burned
+SELECT TotalSteps, Calories FROM Daily_Activity_Sleep;
+```
+
+### Visualization and Export
+
+The results from the above queries were exported into a CSV file for advanced visualization, using Tableau to create detailed charts and graphs that illustrate these correlations. This visual analysis helps in understanding the impact of physical activity on sleep quality and energy expenditure, providing valuable insights for health and wellness recommendations.
+
+These SQL analyses and the subsequent visualizations in Tableau offer a comprehensive view of user behavior and health trends, vital for enhancing wellness technology solutions like Bellabeat.
+```
+
 
 
 
