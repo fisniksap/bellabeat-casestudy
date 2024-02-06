@@ -384,14 +384,10 @@ These SQL analyses and the subsequent visualizations in Tableau offer a comprehe
 ```
 
 ```
-# bellabeat_starter_example
+# Using R Programming and RStudio for Processing and Analysis
 
 **Author:** Fisnik  
 **Date:** 2023-12-27  
-
-## Introduction and background
-
-This is meant to be a sample starter script if you choose to use R for this case study. This is not comprehensive of everything you'll do in the case study, but should be used as a starting point if it is helpful for you.
 
 ## Upload your CSV files to R
 
