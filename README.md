@@ -1,5 +1,5 @@
 # bellabeat-casestudy
-This repo analyzes smart device fitness data to reveal growth opportunities for Bellabeat, a wellness tech firm. We aim to identify device usage trends and align them with Bellabeat's marketing strategies, enhancing customer engagement.
+This repo analyzes smart device fitness data to reveal growth opportunities for Bellabeat, a wellness tech firm. We aim to identify device usage trends and align them with Bellabeat's marketing strategies, enhancing customer engagement. 
 
 # BELLABEAT: 
 ## Case Study 2: How Can a Wellness Technology Company Play It Smart?
