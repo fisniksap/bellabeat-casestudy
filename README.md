@@ -383,6 +383,97 @@ The results from the above queries were exported into a CSV file for advanced vi
 These SQL analyses and the subsequent visualizations in Tableau offer a comprehensive view of user behavior and health trends, vital for enhancing wellness technology solutions like Bellabeat.
 ```
 
+```
+# bellabeat_starter_example
+
+**Author:** Fisnik  
+**Date:** 2023-12-27  
+
+## Introduction and background
+
+This is meant to be a sample starter script if you choose to use R for this case study. This is not comprehensive of everything you'll do in the case study, but should be used as a starting point if it is helpful for you.
+
+## Upload your CSV files to R
+
+Remember to upload your CSV files to your project from the relevant data source: [Fitbit Dataset on Kaggle](https://www.kaggle.com/arashnic/fitbit)
+
+### Uploading CSV Files
+
+#### Specify File Path:
+
+```r
+# Specify file path and read CSV file
+dailyActivity_merged <- read.csv("/path/to/dailyActivity_merged.csv")
+# Display the first few rows of the data frame
+head(dailyActivity_merged)
+
+# Specify file path and read another CSV file
+sleepDay_merged <- read.csv("/path/to/sleepDay_merged.csv")
+head(sleepDay_merged)
+```
+
+## Installing and loading common packages and libraries
+
+```r
+install.packages('tidyverse')
+library(tidyverse)
+```
+
+## Loading your CSV files
+
+```r
+daily_activity <- read.csv("dailyActivity_merged.csv")
+sleep_day <- read.csv("sleepDay_merged.csv")
+hourly_steps <- read.csv("hourlySteps_merged.csv")
+hourly_calories <- read.csv("hourlyCalories_merged.csv")
+```
+
+## Exploring a few key tables
+
+```r
+# Take a look at the daily_activity data
+head(daily_activity)
+# Identify all the columns in the daily_activity data
+colnames(daily_activity)
+
+# Take a look at the sleep_day data
+head(sleep_day)
+# Identify all the columns in the sleep_day data
+colnames(sleep_day)
+```
+
+## Understanding some summary statistics
+
+```r
+# How many unique participants are there?
+n_distinct(daily_activity$Id)
+n_distinct(sleep_day$Id)
+
+# How many observations are there?
+nrow(daily_activity)
+nrow(sleep_day)
+```
+
+### Summary statistics for daily activity and sleep dataframes
+
+```r
+# For the daily activity dataframe
+daily_activity %>% select(TotalSteps, TotalDistance, SedentaryMinutes) %>% summary()
+
+# For the sleep dataframe
+sleep_day %>% select(TotalSleepRecords, TotalMinutesAsleep, TotalTimeInBed) %>% summary()
+```
+
+## Plotting a few explorations
+
+```r
+# Relationship between steps and sedentary minutes
+ggplot(data=daily_activity, aes(x=TotalSteps, y=SedentaryMinutes)) + geom_point()
+
+# Relationship between minutes asleep and time in bed
+ggplot(data=sleep_day, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + geom_point()
+```
+
 
 
 
