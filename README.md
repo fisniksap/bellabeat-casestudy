@@ -1022,7 +1022,17 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
 ```
 ## Share
 
+### Percentage of Users by Average Daily Steps
+
+![Percentage of Users by Average Daily Steps](https://github.com/fisniksap/bellabeat-casestudy/blob/main/percentage_of_users_.averagedailysteps.png?raw=true)
+
+### Activity Type in Minutes Pie Chart
+
 ![Activity Type in Minutes](https://github.com/fisniksap/bellabeat-casestudy/blob/main/activity_type_in%20_minutes.png?raw=true)
+
+### Average Hourly Steps Throughout the Day
+
+![Average Step Time of Day](https://github.com/fisniksap/bellabeat-casestudy/blob/main/average_step_time_of_day.png?raw=true)
 
 ## Act
 
