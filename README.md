@@ -1022,7 +1022,7 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
 ```
 ## Share
 
-![Activity Type in Minutes Pie Chart](images/activity_type_in_minutes.png)
+![Activity Type in Minutes Pie Chart](bellabeat-casestudy/activity_type_in_minutes.png)
 
 
 ## Act
