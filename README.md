@@ -470,10 +470,7 @@ ggplot(data=daily_activity, aes(x=TotalSteps, y=SedentaryMinutes)) + geom_point(
 ggplot(data=sleep_day, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + geom_point()
 ```
 
-### Process and Analysis BB
-
-**Author:** Fisnik  
-**Date:** 2023-12-29  
+## Process and Analysis BB 
 
 ## Processing the Data
 
