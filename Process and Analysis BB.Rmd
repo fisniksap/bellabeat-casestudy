@@ -1,0 +1,177 @@
+---
+title: "Process and Analysis BB"
+author: "Fisnik"
+date: "2023-12-29"
+output: html_document
+---
+Processing the Data
+
+# Load the dplyr package
+```{r}
+library(dplyr)
+```
+Assuming dailyactivity and sleepday data frames are already loaded in your R session
+SQL Query 1: SELECT count(DISTINCT(Id)) FROM daily_activity
+```{r}
+distinct_count_dailyactivity <- daily_activity %>%
+  summarise(count_distinct_id = n_distinct(Id))
+```
+SQL Query 2: SELECT count(DISTINCT(Id)) FROM sleep_day
+```{r}
+distinct_count_sleepday <- sleep_day %>%
+  summarise(count_distinct_id = n_distinct(Id))
+```
+# Display the results
+```{r}
+distinct_count_dailyactivity
+distinct_count_sleepday
+```
+
+## Distinct Values in Hourly Steps and Hourly Calories
+```{r}
+n_distinct(hourly_steps$Id)
+n_distinct((hourly_calories$Id))
+```
+
+Checking for Duplicates on Daily Activity
+```{r}
+# Find duplicates based on specific columns, e.g., 'Id' and 'ActivityDate'
+duplicates_da <- daily_activity[duplicated(daily_activity[c("Id", "ActivityDate", "TotalSteps")]), ]
+
+# View the duplicate rows
+head(duplicates_da)
+```
+Checking for Duplicates on Sleep Day
+```{r}
+# Find duplicates based on specific columns, e.g., 'Id' and 'ActivityDate'
+duplicates_sd <- sleep_day[duplicated(sleep_day[c("Id", "SleepDay", "TotalSleepRecords")]), ]
+
+# View the duplicate rows
+head(duplicates_sd)
+```
+# Count the number of duplicate rows
+```{r}
+num_duplicates <- sum(duplicated(sleep_day))
+```
+
+# Print the result
+```{r}
+num_duplicates
+```
+
+Checking for Duplicates on Hourly Steps
+```{r}
+# Find duplicates based on specific columns, e.g., 'Id' and 'ActivityDate'
+duplicates_hs <- hourly_steps[duplicated(hourly_steps[c("Id", "Date", "Time", "StepTotal")]), ]
+
+# View the duplicate rows
+head(duplicates_hs)
+```
+Checking for Duplicates on Hourly Calories
+```{r}
+# Find duplicates based on specific columns, e.g., 'Id' and 'ActivityDate'
+duplicates_hc <- hourly_calories[duplicated(hourly_calories[c("Id", "Date", "Time", "Calories")]), ]
+
+# View the duplicate rows
+head(duplicates_hc)
+```
+##Deleting duplicate records from sleepday
+```{r}
+# Remove duplicate rows
+sleep_day <- sleep_day %>% 
+  distinct()
+
+# View the updated data frame
+head(sleep_day)
+
+```
+Upload Lubridate and Dplyr
+```{r}
+library(lubridate)
+library(dplyr)
+```
+
+#(hourly_steps) Split the ActivityHour column into separate date and time columns and format the date:
+```{r}
+#Splitting and Formatting
+hourly_steps <- hourly_steps %>%
+  mutate(
+    Date = format(as.Date(mdy_hms(ActivityHour)), "%m/%d/%Y"),
+    Time = format(mdy_hms(ActivityHour), "%H:%M:%S")
+  )
+## Remove the ActivityHour column from hourly_steps
+hourly_steps <- hourly_steps %>%
+  select(-ActivityHour)
+
+# Reorder columns in hourly_steps
+hourly_steps <- hourly_steps %>%
+  select(Id, Date, Time, StepTotal)
+
+```
+
+#(hourly_calories) Split the ActivityHour column into separate date and time columns and format the date:
+```{r}
+#Splitting and Formatting
+hourly_calories <- hourly_calories %>%
+  mutate(
+    Date = format(as.Date(mdy_hms(ActivityHour)), "%m/%d/%Y"),
+    Time = format(mdy_hms(ActivityHour), "%H:%M:%S")
+  )
+# Remove the ActivityHour column from hourly_calories
+hourly_calories <- hourly_calories %>%
+  select(-ActivityHour)
+# Reorder columns in hourly_calories
+hourly_calories <- hourly_calories %>%
+  select(Id, Date, Time, Calories)
+```
+
+#Formatting the date on Sleep Day table:
+```{r}
+# Assuming sleep_day is your data frame
+
+# 1. Convert SleepDay to POSIXct
+sleep_day$SleepDay <- as.POSIXct(sleep_day$SleepDay, format="%m/%d/%Y %I:%M:%S %p", tz="UTC")
+
+# 2. Extract Date and Time
+sleep_day$Date <- as.Date(sleep_day$SleepDay) # Extract Date
+sleep_day$Time <- format(sleep_day$SleepDay, "%H:%M:%S") # Extract Time
+
+# 3. Remove the SleepDay column
+sleep_day <- sleep_day[, !colnames(sleep_day) %in% "SleepDay"]
+ 
+# 1. Reorder Columns to Place Date as the Second Column
+sleep_day <- sleep_day[, c("Id", "Date", setdiff(names(sleep_day), c("Id", "Date", "Time")))]
+
+# Remove the Time column from sleep_day
+sleep_day$Time <- NULL
+
+# Assuming sleep_day is your data frame and 'Id' is the first column
+
+# Rearrange so that Date is the second column
+sleep_day <- sleep_day[, c("Id", "Date", setdiff(names(sleep_day), c("Id", "Date")))]
+
+# Convert the Date column to the new format
+sleep_day$Date <- format(as.Date(sleep_day$Date), "%m/%d/%Y")
+
+# Rename the column using dplyr
+sleep_day <- sleep_day %>% rename(SleepDay = Date)
+```
+
+
+```{r}
+# Convert ActivityDate from character to Date
+# Replace "%Y-%m-%d" with the format that matches your date strings
+daily_activity$ActivityDate <- as.Date(daily_activity$ActivityDate, format = "%m/%d/%Y")
+
+# Add Day_of_Week column
+daily_activity$Day_of_Week <- weekdays(daily_activity$ActivityDate)
+
+```
+
+##Update all the tables date format since in R date is formated to "%Y-%m-%d"
+```{r}
+hourly_steps$Date <- as.Date(hourly_steps$Date, format = "%m/%d/%Y")
+hourly_calories$Date <- as.Date(hourly_calories$Date, format = "%m/%d/%Y")
+
+```
+

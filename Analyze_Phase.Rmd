@@ -1,0 +1,435 @@
+---
+title: "Analyze Phase"
+author: "Fisnik"
+date: "2024-01-05"
+output: html_document
+---
+## Average Data by users
+```{r}
+library(dplyr)
+
+av_data_users <- Daily_Activity_Sleep %>%
+  group_by(Id) %>%
+  summarize(
+    Avg_Distance = round(mean(TotalDistance, na.rm = TRUE), 2),
+    Avg_Daily_Steps = round(mean(TotalSteps, na.rm = TRUE), 2),
+    Avg_Sleep = round(mean(TotalMinutesAsleep, na.rm = TRUE), 0),
+    Avg_Calories = round(mean(Calories, na.rm = TRUE), 0)
+  )
+ View(av_data_users)
+```
+## Average Data by users
+```{r}
+av_data_DayfWeek <- Daily_Activity_Sleep %>%
+  group_by(Day_of_Week) %>%
+  summarize(
+    Avg_Distance = round(mean(TotalDistance, na.rm = TRUE), 2),
+    Avg_Daily_Steps = round(mean(TotalSteps, na.rm = TRUE), 2),
+    Avg_Sleep = round(mean(TotalMinutesAsleep, na.rm = TRUE), 0),
+    Avg_Calories = round(mean(Calories, na.rm = TRUE), 0)
+  )
+View(av_data_DayfWeek)
+```
+ #Total Data by Users
+```{r}
+total_data_users <- Daily_Activity_Sleep %>%
+  group_by(Id) %>%
+  summarize(
+    Total_Distance = round(sum(TotalDistance, na.rm = TRUE), 2),
+    Total_Daily_Steps = sum(mean(TotalSteps, na.rm = TRUE), 2),
+    Total_Sleep = round(sum(TotalMinutesAsleep, na.rm = TRUE), 0),
+    Total_Calories = round(sum(Calories, na.rm = TRUE), 0)
+  )
+
+View(total_data_users)
+```
+
+#Total Data by Day of Week
+```{r}
+total_data_DayfWeek <- Daily_Activity_Sleep %>%
+  group_by(Day_of_Week) %>%
+  summarize(
+    Total_Distance = round(sum(TotalDistance, na.rm = TRUE), 2),
+    Toal_Daily_Steps = round(sum(TotalSteps, na.rm = TRUE), 2),
+    Total_Sleep = round(sum(TotalMinutesAsleep, na.rm = TRUE), 0),
+    Total_Calories = round(sum(Calories, na.rm = TRUE), 0)
+  )
+View(total_data_DayfWeek)
+```
+#New DataFrame called User Classification by AVG Daily Steps
+```{r}
+user_cat_by_avg_dailysteps <- av_data_users %>%
+  mutate(
+    User_Type = case_when(
+      Avg_Daily_Steps < 5000 ~ "Sedentary",
+      Avg_Daily_Steps >= 5000 & Avg_Daily_Steps < 7499 ~ "Lightly Active",
+      Avg_Daily_Steps >= 7500 & Avg_Daily_Steps < 9999 ~ "Fairly Active",
+      Avg_Daily_Steps >= 10000 ~ "Very Active",
+      TRUE ~ NA_character_  # Default case if none of the above conditions are met
+    )
+  )
+
+View(user_cat_by_avg_dailysteps)
+```
+
+#Determining the percentage of different types of users based on average daily steps
+```{r}
+# Step 1: Count the number of occurrences of each User_Type
+user_counts <- user_cat_by_avg_dailysteps %>%
+  count(User_Type)
+
+# Step 2: Calculate the total number of users
+total_users <- nrow(user_cat_by_avg_dailysteps)
+
+# Step 3: Calculate the percentage for each User_Type
+user_counts <- user_counts %>%
+  mutate(Percentage = n / total_users * 100)
+
+# View the results
+user_counts
+View(user_counts)
+```
+#Creating a pie chart for User Types
+```{r}
+# Creating the pie chart
+# Prepare labels with percentages
+labels_with_percentage <- paste(user_counts$User_Type, 
+                                " - ", 
+                                round(user_counts$Percentage, 2), "%", sep = "")
+
+# Creating the pie chart with percentage labels
+pie(user_counts$Percentage, 
+    labels = labels_with_percentage, 
+    main = "User Classification by Average Daily Steps", 
+    col = rainbow(length(user_counts$User_Type)))
+
+
+```
+#Average Hourly Steps Throughout the Day
+```{r}
+average_hourly_steps <- hourly_steps %>%
+  group_by(Time) %>%
+  summarize(Avg_StepTotal = round(mean(StepTotal, na.rm = TRUE), 0))
+
+View(average_hourly_steps) 
+
+```
+
+#Plotting the Bar Chart Using ggplot2
+```{r}
+# Load the ggplot2 library
+library(ggplot2)
+
+# Create the bar chart with a color gradient
+ggplot(average_hourly_steps, aes(x = Time, y = Avg_StepTotal, fill = Avg_StepTotal)) +
+  geom_bar(stat = "identity", width = 0.7) +  # Use stat = "identity" to use the y values for bar heights
+  scale_fill_gradient(low = "navy", high = "red") +  # Color gradient from navy to red
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +  # Rotate the x-axis text for readability
+  labs(x = "Time", y = "Average Steps", title = "Average Hourly Steps") +
+  scale_x_discrete(limits = average_hourly_steps$Time)  # Ensure the x-axis has all the hours in order
+
+```
+#Calculating Average Calories Throughout the Day
+```{r}
+average_hourly_calories <- hourly_calories %>%
+  group_by(Time) %>%
+  summarize(Avg_Calories = round(mean(Calories, na.rm = TRUE), 0))
+
+View(average_hourly_calories)
+```
+
+#Plotting the barchart using ggplot2
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(scales)  # For the gradient color scale
+# Create the bar chart
+ggplot(average_hourly_calories, aes(x = Time, y = Avg_Calories)) +
+  geom_bar(stat = "identity", aes(fill = Avg_Calories), width = 0.7) +  # Use fill to add the gradient
+  geom_text(aes(label = Avg_Calories), vjust = -0.3, size = 2.5) +  # Add labels on top of the bars
+  scale_fill_gradient2(low = "navy", high = "red", mid = "yellow", midpoint = median(average_hourly_calories$Avg_Calories)) +  # Gradient color scale
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +  # Rotate x-axis labels for readability
+  labs(x = "Time of Day", y = "Average Calories Burned", title = "Average Hourly Calories Burned")
+
+```
+#Calculating Usage in Days by Users
+
+```{r}
+library(dplyr)
+# Creating the new dataframe with Id and Total_Usage_in_Days
+frequency_of_usage <- Daily_Activity_Sleep %>%
+  group_by(Id) %>%
+  summarize(Total_Usage_in_Days = n())
+
+View(frequency_of_usage)
+```
+
+#Classification of Users by use of the app in the number of days
+```{r}
+# Assuming frequency_of_usage already exists with the columns Id and Total_Usage_in_Days
+classification_usage_days <- frequency_of_usage %>%
+  mutate(Type_of_Usage = case_when(
+    Total_Usage_in_Days >= 1 & Total_Usage_in_Days <= 10 ~ "Low Use",
+    Total_Usage_in_Days >= 11 & Total_Usage_in_Days <= 20 ~ "Moderate Use",
+    Total_Usage_in_Days >= 21 & Total_Usage_in_Days <= 31 ~ "High Use",
+    TRUE ~ "Other"  # For cases that don't match any of the above conditions
+  ))
+
+View(classification_usage_days)
+```
+
+#Calculating the Percentage of users based on use of the app in days
+```{r}
+# Calculate the percentage of each Type_of_Usage
+usage_percentages <- classification_usage_days %>%
+  count(Type_of_Usage) %>%
+  mutate(Percentage = n / 24 * 100)
+
+View(usage_percentages)
+```
+#Creating a Pie Chart for the Usage Type
+```{r}
+# Prepare the labels with percentage
+library(ggplot2)
+usage_percentages$labels <- paste(usage_percentages$Type_of_Usage, round(usage_percentages$Percentage, 1), "%", sep=" ")
+# Create the pie chart with specific colors
+ggplot(usage_percentages, aes(x = "", y = Percentage, fill = Type_of_Usage)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  scale_fill_manual(values = c("navy", "yellow", "red")) + # Manually assign colors
+  geom_text(aes(label = labels), position = position_stack(vjust = 0.5)) +
+  theme_void() +
+  labs(title = "Percentage of Each Type of Usage")
+```
+```{r}
+# Load the necessary libraries
+library(ggplot2)
+library(ggrepel)
+
+# Assuming usage_percentages is your dataframe and it already contains a 'labels' column 
+# Create the pie chart with labels outside the slices
+ggplot(usage_percentages, aes(x = "", y = Percentage, fill = Type_of_Usage)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  scale_fill_manual(values = c("navy", "yellow", "red")) + # Manually set the colors
+  geom_label_repel(aes(label = labels), 
+                   nudge_x = 0.5, nudge_y = 0.5, # Adjust the nudge values as needed
+                   size = 3,
+                   box.padding = unit(0.35, "lines"),
+                   point.padding = unit(0.5, "lines")) +
+  theme_void() +
+  labs(title = "Percentage of Each Type of Usage") +
+  theme(legend.position = "right")
+
+```
+#Total Time spent on Each Activity per Day
+```{r}
+daily_activity_summary <- daily_activity %>%
+  group_by(Day_of_Week) %>%
+  summarize(
+    Sedentary_Mins = sum(SedentaryMinutes, na.rm = TRUE),
+    LightlyActive_Mins = sum(LightlyActiveMinutes, na.rm = TRUE),
+    FairlyActive_Mins = sum(FairlyActiveMinutes, na.rm = TRUE),
+    VeryActive_Mins = sum(VeryActiveMinutes, na.rm = TRUE)
+  )
+View(daily_activity_summary)
+```
+
+#Total Time spent on Each Activity per Day
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+# Create a dataframe from your provided data
+daily_activity_summary <- data.frame(
+  Day_of_Week = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+  Sedentary_Mins = c(123353, 153119, 148422, 141413, 126039, 119571, 119821),
+  LightlyActive_Mins = c(23047, 29996, 28478, 27257, 25729, 25686, 21051),
+  FairlyActive_Mins = c(1680, 2179, 1965, 1758, 1526, 1885, 1758),
+  VeryActive_Mins = c(2773, 3489, 3117, 2853, 2527, 2718, 2418)
+)
+
+# Ensure Day_of_Week is a factor and in the correct order
+daily_activity_summary$Day_of_Week <- factor(daily_activity_summary$Day_of_Week, 
+                                             levels = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                                        "Friday", "Saturday", "Sunday"))
+
+# Reshape data from wide to long format
+daily_activity_long <- pivot_longer(daily_activity_summary, 
+                                    cols = -Day_of_Week, 
+                                    names_to = "ActivityType", 
+                                    values_to = "Minutes")
+
+# Create the grouped bar chart
+ggplot(daily_activity_long, aes(x = Day_of_Week, y = Minutes, fill = ActivityType)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.75)) +
+  scale_fill_manual(values = c("Sedentary_Mins" = "navy", 
+                               "LightlyActive_Mins" = "yellow", 
+                               "FairlyActive_Mins" = "orange", 
+                               "VeryActive_Mins" = "red")) +
+  labs(x = "Day of the Week", y = "Total Minutes", 
+       title = "Activity Minutes by Day of the Week") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1))  # Adjust text angle for readability
+
+
+
+```
+##Total Minutes each user spends on each activity
+```{r}
+library(dplyr)
+# Assuming your dataframe is named daily_activity
+total_activity_by_user <- daily_activity %>%
+  group_by(Id) %>%
+  summarize(
+    Sedentary_Mins = sum(SedentaryMinutes, na.rm = TRUE),
+    LightlyActive_Mins = sum(LightlyActiveMinutes, na.rm = TRUE),
+    FairlyActive_Mins = sum(FairlyActiveMinutes, na.rm = TRUE),
+    VeryActive_Mins = sum(VeryActiveMinutes, na.rm = TRUE)
+  )
+
+View(total_activity_by_user)
+```
+
+##Calculating Percentage of Total Time spent on Each Activity per Day
+
+```{r}
+# Calculate total minutes for each day
+daily_activity_summary$Total_Mins <- rowSums(daily_activity_summary[c("Sedentary_Mins", "LightlyActive_Mins", "FairlyActive_Mins", "VeryActive_Mins")])
+
+# Calculate percentages
+daily_activity_summary$Sedentary_Percent <- daily_activity_summary$Sedentary_Mins / daily_activity_summary$Total_Mins * 100
+daily_activity_summary$LightlyActive_Percent <- daily_activity_summary$LightlyActive_Mins / daily_activity_summary$Total_Mins * 100
+daily_activity_summary$FairlyActive_Percent <- daily_activity_summary$FairlyActive_Mins / daily_activity_summary$Total_Mins * 100
+daily_activity_summary$VeryActive_Percent <- daily_activity_summary$VeryActive_Mins / daily_activity_summary$Total_Mins * 100
+
+# Select only the relevant columns to display
+percentage_data <- daily_activity_summary[c("Day_of_Week", "Sedentary_Percent", "LightlyActive_Percent", "FairlyActive_Percent", "VeryActive_Percent")]
+percentage_data
+
+# Round the percentages to two decimal places and format as strings with a "%" sign
+percentage_data$Sedentary_Percent <- sprintf("%.2f%%", round(percentage_data$Sedentary_Percent, 2))
+percentage_data$LightlyActive_Percent <- sprintf("%.2f%%", round(percentage_data$LightlyActive_Percent, 2))
+percentage_data$FairlyActive_Percent <- sprintf("%.2f%%", round(percentage_data$FairlyActive_Percent, 2))
+percentage_data$VeryActive_Percent <- sprintf("%.2f%%", round(percentage_data$VeryActive_Percent, 2))
+
+# Display the updated dataframe
+View(percentage_data)
+
+```
+
+### Joining the dataframes and creating Daily_Use
+```{r}
+# Joining the dataframes and creating Daily_Use
+Daily_Use <- left_join(daily_activity, classification_usage_days[, c("Id", "Total_Usage_in_Days", "Type_of_Usage")], by = "Id")
+
+View(Daily_Use)
+
+# Add Total_Minutes_Worn column to Daily_Use
+Daily_Use <- Daily_Use %>%
+  mutate(Total_Minutes_Worn = VeryActiveMinutes + FairlyActiveMinutes + LightlyActiveMinutes + SedentaryMinutes)
+
+# Load dplyr library
+library(dplyr)
+
+# Add Worn_Type column to Daily_Use
+Daily_Use <- Daily_Use %>%
+  mutate(Worn_Type = case_when(
+    (Total_Minutes_Worn / 1440) * 100 == 100 ~ "All Day",
+    (Total_Minutes_Worn / 1440) * 100 < 100 & (Total_Minutes_Worn / 1440) * 100 >= 50 ~ "More Than Half Day",
+    (Total_Minutes_Worn / 1440) * 100 < 50 & (Total_Minutes_Worn / 1440) * 100 > 0 ~ "Less Than Half Day",
+    TRUE ~ NA_character_  # For cases that don't match any of the above conditions or missing values
+  ))
+```
+
+
+```{r}
+# Remove rows with NA values in any column from Daily_Use
+Daily_Use_Cleaned <- na.omit(Daily_Use)
+View(Daily_Use_Cleaned)
+```
+
+```{r}
+library(dplyr)
+
+# Assuming Daily_Use_Cleaned is your dataframe and it contains the column Worn_Type
+worn_type_summary <- Daily_Use_Cleaned %>%
+  group_by(Worn_Type) %>%
+  summarize(
+    Total_Users = n(),
+    Worn_Type_Percentage = paste0(round((n() / 713) * 100, 1), "%")
+  )
+
+View(worn_type_summary)
+```
+
+```{r}
+# Convert the Worn_Type_Percentage from a character to a numeric format
+worn_type_summary$Numeric_Percentage <- as.numeric(sub("%", "", worn_type_summary$Worn_Type_Percentage))
+
+# Create the pie chart
+ggplot(worn_type_summary, aes(x = "", y = Numeric_Percentage, fill = Worn_Type)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  scale_fill_brewer(palette = "Set3") +
+  geom_text(aes(label = Worn_Type_Percentage), position = position_stack(vjust = 0.5))
+```
+##Correlation Between Daily Steps and Minutes Asleep
+```{r}
+stepsminutes_correlation <- Daily_Activity_Sleep %>%
+  select(Steps = TotalSteps, TotalMinutesAsleep)
+
+View(stepsminutes_correlation)
+```
+
+## Use Scatterplot in ggplot2 to visualize correlation between Daily Steps and Minutes Asleep
+```{r}
+# Load necessary library
+library(ggplot2)
+
+# Create the scatter plot with a curved trend line
+ggplot(stepsminutes_correlation, aes(x = Steps, y = TotalMinutesAsleep)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "loess", span = 1, color = "blue", se = FALSE) +  # Add curved trend line
+  labs(x = "Daily Steps", y = "Minutes Asleep", 
+       title = "Correlation between Daily Steps and Minutes Asleep") +
+  theme_minimal()  # Use a minimal theme
+
+
+```
+
+##Correlation Between Daily Steps and Calories
+```{r}
+stepscalories_correlation <- Daily_Activity_Sleep %>%
+  select(Steps = TotalSteps, Calories)
+
+View(stepscalories_correlation)
+```
+## Use Scatterplot in ggplot2 to visualize correlation between Daily Steps and Calories
+
+```{r}
+# Load necessary library
+library(ggplot2)
+
+# Create the scatter plot with a curved trend line
+ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "loess", span = 0.9, color = "blue", se = FALSE) +  # Add curved trend line
+  labs(x = "Daily Steps", y = "Calories", 
+       title = "Correlation between Daily Steps and Calories") +
+  theme_minimal()  # Use a minimal theme
+
+```
+
+
+
+
+
+
+
+
+
+
