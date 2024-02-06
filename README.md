@@ -1,6 +1,9 @@
 # bellabeat-casestudy
 This repo analyzes smart device fitness data to reveal growth opportunities for Bellabeat, a wellness tech firm. We aim to identify device usage trends and align them with Bellabeat's marketing strategies, enhancing customer engagement. 
 
+### Data Can Be Accessed at:
+https://www.kaggle.com/datasets/arashnic/fitbit
+
 # BELLABEAT: 
 ## Case Study 2: How Can a Wellness Technology Company Play It Smart? 
 
@@ -8,7 +11,6 @@ Considering this is a pilot project, I was inspired and followed the guidance of
 
 ### Statement of the Business Task:
 Analyze smart device fitness data and unlock new growth opportunities for the company (Bellabeat). Identify trends and investigate how these trends could apply to Bellabeat customers. Give recommendations based on findings to improve marketing strategy.
-
 
 # Ask
 1. What are some trends in smart device usage?
