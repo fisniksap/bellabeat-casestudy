@@ -2,7 +2,7 @@
 This repo analyzes smart device fitness data to reveal growth opportunities for Bellabeat, a wellness tech firm. We aim to identify device usage trends and align them with Bellabeat's marketing strategies, enhancing customer engagement. 
 
 # BELLABEAT: 
-## Case Study 2: How Can a Wellness Technology Company Play It Smart?
+## Case Study 2: How Can a Wellness Technology Company Play It Smart? 
 
 Considering this is a pilot project, I was inspired and followed the guidance of Ahmad Nawaz on LinkedIn. However, I went on and used SQL Server instead of MySQL, as well as R programming to conduct the processing and analysis.
 
