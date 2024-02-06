@@ -470,6 +470,138 @@ ggplot(data=daily_activity, aes(x=TotalSteps, y=SedentaryMinutes)) + geom_point(
 ggplot(data=sleep_day, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + geom_point()
 ```
 
+### Process and Analysis BB
+
+**Author:** Fisnik  
+**Date:** 2023-12-29  
+
+## Processing the Data
+
+### Load the dplyr package
+
+```r
+library(dplyr)
+```
+
+Assuming `dailyactivity` and `sleepday` data frames are already loaded in your R session.
+
+### Count Distinct IDs in Daily Activity
+
+```r
+distinct_count_dailyactivity <- daily_activity %>%
+  summarise(count_distinct_id = n_distinct(Id))
+```
+
+### Count Distinct IDs in Sleep Day
+
+```r
+distinct_count_sleepday <- sleep_day %>%
+  summarise(count_distinct_id = n_distinct(Id))
+```
+
+### Display the results
+
+```r
+distinct_count_dailyactivity
+distinct_count_sleepday
+```
+
+## Distinct Values in Hourly Steps and Hourly Calories
+
+```r
+n_distinct(hourly_steps$Id)
+n_distinct(hourly_calories$Id)
+```
+
+## Checking for Duplicates on Daily Activity and Sleep Day
+
+### Daily Activity
+
+```r
+duplicates_da <- daily_activity[duplicated(daily_activity[c("Id", "ActivityDate", "TotalSteps")]), ]
+head(duplicates_da)
+```
+
+### Sleep Day
+
+```r
+duplicates_sd <- sleep_day[duplicated(sleep_day[c("Id", "SleepDay", "TotalSleepRecords")]), ]
+head(duplicates_sd)
+```
+
+### Count the number of duplicate rows in Sleep Day
+
+```r
+num_duplicates <- sum(duplicated(sleep_day))
+num_duplicates
+```
+
+## Deleting Duplicate Records from sleepday
+
+```r
+sleep_day <- sleep_day %>% distinct()
+head(sleep_day)
+```
+
+## Upload Lubridate and Dplyr for Date and Time Manipulation
+
+```r
+library(lubridate)
+library(dplyr)
+```
+
+### Formatting Date and Time in Hourly Steps and Hourly Calories
+
+#### Hourly Steps
+
+```r
+hourly_steps <- hourly_steps %>%
+  mutate(
+    Date = format(as.Date(mdy_hms(ActivityHour)), "%m/%d/%Y"),
+    Time = format(mdy_hms(ActivityHour), "%H:%M:%S")
+  ) %>%
+  select(-ActivityHour) %>%
+  select(Id, Date, Time, StepTotal)
+```
+
+#### Hourly Calories
+
+```r
+hourly_calories <- hourly_calories %>%
+  mutate(
+    Date = format(as.Date(mdy_hms(ActivityHour)), "%m/%d/%Y"),
+    Time = format(mdy_hms(ActivityHour), "%H:%M:%S")
+  ) %>%
+  select(-ActivityHour) %>%
+  select(Id, Date, Time, Calories)
+```
+
+### Formatting the Date on Sleep Day Table
+
+```r
+sleep_day <- sleep_day %>%
+  mutate(
+    SleepDay = as.Date(SleepDay, format="%m/%d/%Y %I:%M:%S %p", tz="UTC"),
+    Date = as.Date(SleepDay),
+    Time = format(SleepDay, "%H:%M:%S")
+  ) %>%
+  select(-c(SleepDay, Time)) %>%
+  rename(SleepDay = Date)
+```
+
+### Update Date Formats Across All Tables to Match R Standards
+
+```r
+daily_activity$ActivityDate <- as.Date(daily_activity$ActivityDate, format = "%m/%d/%Y")
+daily_activity$Day_of_Week <- weekdays(daily_activity$ActivityDate)
+
+sleep_day$SleepDay <- as.Date(sleep_day$SleepDay)
+sleep_day$Day_of_Week <- weekdays(sleep_day$SleepDay)
+
+hourly_steps$Date <- as.Date(hourly_steps$Date, format = "%m/%d/%Y")
+hourly_calories$Date <- as.Date(hourly_calories$Date, format = "%m/%d/%Y")
+```
+
 
 
 
