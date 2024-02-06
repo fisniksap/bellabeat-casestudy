@@ -1053,11 +1053,11 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
 
 ### Correlation Between Daily Steps and Minutes Asleep
 
-![Correlation Between Daily Steps and Minutes Asleep](https://github.com/fisniksap/bellabeat-casestudy/blob/main/correlation_between_daily_steps_and%20minutes_asleep.png?raw=true)
+![Correlation Between Daily Steps and Minutes Asleep](https://github.com/fisniksap/bellabeat-casestudy/blob/main/correlation_between_daily_steps_and_minutes_asleep.png?raw=true)
 
 ### Correlation Between Daily Steps and Calories
 
-![Correlation Between Daily Steps and Calories Burned](https://github.com/fisniksap/bellabeat-casestudy/blob/main/correlation_between_daily_steps_and_calories.png?raw=true)
+
 
 
 # Act
