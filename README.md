@@ -1021,6 +1021,7 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
   theme_minimal()  # Use a minimal theme
 ```
 ## Share
+![Example Visualization](bellabeat-casestudy/activity_type_in _minutes.png)
 
 
 ## Act
