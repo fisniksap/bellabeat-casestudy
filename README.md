@@ -9,7 +9,8 @@ Considering this is a pilot project, I was inspired and followed the guidance of
 ### Statement of the Business Task:
 Analyze smart device fitness data and unlock new growth opportunities for the company (Bellabeat). Identify trends and investigate how these trends could apply to Bellabeat customers. Give recommendations based on findings to improve marketing strategy.
 
-### Ask
+
+# Ask
 1. What are some trends in smart device usage?
 2. How could these trends apply to Bellabeat customers?
 3. How could these trends help influence Bellabeat marketing strategy?
@@ -1034,7 +1035,32 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
 
 ![Average Step Time of Day](https://github.com/fisniksap/bellabeat-casestudy/blob/main/average_step_time_of_day.png?raw=true)
 
-## Act
+### Average Calories Throughout the Day
+
+![Average Calories by Hour](https://github.com/fisniksap/bellabeat-casestudy/blob/main/average_calories_by_hour.png?raw=true)
+
+### Categorization of Users by Usage and their Percentage
+
+![Percentage of Users Based on App Use](https://github.com/fisniksap/bellabeat-casestudy/blob/main/percentage_of_users_based_on_app_use.png?raw=true)
+
+### Total Time spent on Each Activity per Day
+
+![Total Time Spent on Each Activity Per Day](https://github.com/fisniksap/bellabeat-casestudy/blob/main/total_time_spent_on_each_activity_per_day.png?raw=true)
+
+### Percentage of Users Wearing Device by Time
+
+![Percentage of Users Wearing Device by Time](https://github.com/fisniksap/bellabeat-casestudy/blob/main/percentage_of_users_wearing_wevice_by_time.png?raw=true)
+
+### Correlation Between Daily Steps and Minutes Asleep
+
+![Correlation Between Daily Steps and Minutes Asleep](https://github.com/fisniksap/bellabeat-casestudy/blob/main/correlation_between_daily_steps_and%20minutes_asleep.png?raw=true)
+
+### Correlation Between Daily Steps and Calories
+
+![Correlation Between Daily Steps and Calories Burned](https://github.com/fisniksap/bellabeat-casestudy/blob/main/correlation_between_daily_steps_and_calories.png?raw=true)
+
+
+# Act
 
 ## Recommendations for Bellabeat's Marketing Strategy
 
