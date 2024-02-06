@@ -1020,6 +1020,11 @@ ggplot(stepscalories_correlation, aes(x = Steps, y = Calories)) +
        title = "Correlation between Daily Steps and Calories") +
   theme_minimal()  # Use a minimal theme
 ```
+## Share
+
+![Activity Type in Minutes Pie Chart](images/activity_type_in_minutes.png)
+
+
 ## Act
 
 ## Recommendations for Bellabeat's Marketing Strategy
