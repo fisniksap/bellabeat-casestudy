@@ -32,7 +32,7 @@ In the process phase of the analysis, we employed SQL Server and R programming a
 
 To guarantee the integrity of our data, we conducted several steps:
 
-- **Verification of Data Completeness:** Ensured all expected records were present and accounted for across the 18 CSV files.
+- **Verification of Data Completeness:** Ensured all expected records were present and accounted for across the 4 CSV files.
 - **Outlier Identification and Handling:** Analyzed statistical summaries to detect and investigate outliers, deciding on a case-by-case basis whether to keep, adjust, or remove these data points.
 - **Consistency Checks:** Standardized formats for dates, times, and categorical variables across the dataset to facilitate accurate analysis.
 - **Duplication Checks:** Executed SQL queries to find and eliminate duplicate entries, thereby preventing skewed analysis results.
