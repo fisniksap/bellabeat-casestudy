@@ -7,7 +7,7 @@ https://www.kaggle.com/datasets/arashnic/fitbit
 # BELLABEAT: 
 ## Case Study 2: How Can a Wellness Technology Company Play It Smart? 
 
-Considering this is a pilot project, I was inspired and followed the guidance of Ahmad Nawaz on LinkedIn. However, I went on and used SQL Server instead of MySQL, as well as R programming to conduct the processing and analysis.
+This pilot project was part of the Google Data Analytics Capstone. A big thank you to Ahmad Nawaz who helped out with choosing the right methodology. SQL Server and R programming were used for data processing and analysis.
 
 ### Statement of the Business Task:
 Analyze smart device fitness data and unlock new growth opportunities for the company (Bellabeat). Identify trends and investigate how these trends could apply to Bellabeat customers. Give recommendations based on findings to improve marketing strategy.
