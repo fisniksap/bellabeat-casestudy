@@ -28,6 +28,18 @@ As we proceed, it is imperative to maintain a critical view of the insights deri
 ## Process
 This section outlines the SQL Server code used in the analysis, focusing on identifying unique users, checking for duplicates, and cleaning the data.
 
+In the process phase of the analysis, we employed SQL Server and R programming as our primary tools for data cleaning and manipulation. SQL Server was chosen for its robust data handling capabilities, particularly for querying and managing large datasets efficiently. This allowed us to perform preliminary data inspections, identify and remove duplicates, and ensure consistency across the user IDs and timestamps. R programming, known for its powerful data analysis and visualization libraries, was utilized to further clean the dataset, including handling missing values, normalizing data formats, and creating new variables for analysis (e.g., categorizing activity levels).
+
+To guarantee the integrity of our data, we conducted several steps:
+
+**Verification of Data Completeness:** Ensured all expected records were present and accounted for across the 18 CSV files.
+**Outlier Identification and Handling**: Analyzed statistical summaries to detect and investigate outliers, deciding on a case-by-case basis whether to keep, adjust, or remove these data points.
+**Consistency Checks:** Standardized formats for dates, times, and categorical variables across the dataset to facilitate accurate analysis.
+**Duplication Checks:** Executed SQL queries to find and eliminate duplicate entries, thereby preventing skewed analysis results.
+**Integrity Validation:** Cross-referenced data points across different tables (e.g., comparing steps recorded in 'daily activity' versus 'hourly steps') to confirm consistency and reliability of the data.
+
+The combination of SQL Server and R was instrumental in handling the dataset's complexity, enabling us to refine the raw data into a structured format ready for in-depth analysis. This meticulous process ensured that our dataset was clean, consistent, and aligned with the analytical goals of understanding Bellabeat customers' behavior patterns.
+
 ### Unique Users
 Queries to check the number of unique users in different tables:
 
